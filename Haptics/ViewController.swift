@@ -51,8 +51,9 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var hapticsTableView: UITableView!
     
-    private let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-    private let selectionFeedbackGenerator = UISelectionFeedbackGenerator()
+    private var notificationFeedbackGenerator : UINotificationFeedbackGenerator?
+    private var impactFeedbackGenerator: UIImpactFeedbackGenerator?
+    private var selectionFeedbackGenerator : UISelectionFeedbackGenerator?
     
     private var myGenerators: [MyHaptics] = [.notificationFeedbackGenerator, .impactFeedbackGenerator, .selectionFeedbackGenerator]
     
@@ -61,6 +62,12 @@ class ViewController: UIViewController {
         
         hapticsTableView.delegate = self
         hapticsTableView.dataSource = self
+    }
+    
+    deinit {
+        notificationFeedbackGenerator = nil
+        impactFeedbackGenerator = nil
+        selectionFeedbackGenerator = nil
     }
 }
 
@@ -126,19 +133,19 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let haptic = myGenerators[indexPath.section]
         switch haptic  {
         case .notificationFeedbackGenerator:
-            notificationFeedbackGenerator.prepare()
+            notificationFeedbackGenerator?.prepare()
             if let type = haptic.getNotificationFeedbackGenerator()[indexPath.row].type {
-                notificationFeedbackGenerator.notificationOccurred(type)
+                notificationFeedbackGenerator?.notificationOccurred(type)
             }
             break
         case .impactFeedbackGenerator:
             if let type = haptic.getImpactFeedbackGenerators()[indexPath.row].type {
-                let generator = UIImpactFeedbackGenerator(style: type)
-                generator.impactOccurred()
+                impactFeedbackGenerator = UIImpactFeedbackGenerator(style: type)
+                impactFeedbackGenerator?.impactOccurred()
             }
             break
         case .selectionFeedbackGenerator:
-            selectionFeedbackGenerator.selectionChanged()
+            selectionFeedbackGenerator?.selectionChanged()
             break
         }
     }
